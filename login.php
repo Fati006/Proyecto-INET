@@ -2,32 +2,37 @@
 
 session_start();
 
-if (isset($_SESSION['is_admin'])) {
-    if ($_SESSION['is_admin']) {
-        header("Location: admin.php");
-        exit();
-    } else {
-        header("Location: index.html");
-        exit();
-    }
-}
-
 // Procesar el formulario de login
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $password = $_POST['contraseña'];
+    $name = $_POST['name'];
 
     if ($password === '12345') {
         // Contraseña de administrador correcta
         $_SESSION['is_admin'] = true;
         header("Location: admin.php");
-        exit();
+        
     } else {
         // Redirigir al usuario normal a la página principal
         $_SESSION['is_admin'] = false;
         header("Location: index.html");
-        exit();
+        
     }
+    exit();
 }
+
+$direccion = "localhost";
+$usuario = "root";
+$contraseña = "";
+$dbname = "mundo_deporte";
+
+$conn = mysqli_connect($direccion, $usuario, $contraseña, $dbname);
+
+$Insert_Usuarios = "INSERT INTO `login`(`Admin`, `Cliente`) VALUES ('$name','$password')";
+
+$Insertar = mysqli_query($direccion, $Insert_Usuarios);
+
+
 ?>
 
 <!DOCTYPE html>
@@ -60,8 +65,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                             <h4 class="card-title">Inicio de sesión</h4>
                             <form method="POST" class="my-login-validation" novalidate="" id="login" action="login.php">
                                 <div class="form-group">
-                                    <label for="email">Correo electrónico</label>
-                                    <input id="email" type="email" class="form-control" name="email" required autofocus>
+                                    <label for="name">Nombre</label>
+                                    <input id="name" type="name" class="form-control" name="name" required autofocus>
                                     <div class="invalid-feedback">
                                         Correo electrónico inválido
                                     </div>
