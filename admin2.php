@@ -22,6 +22,8 @@
             
             <label>Imagen del producto</label>
             <input type="file" name="Imagen_Producto">
+
+            <button type="submit">Enviar</button>
         </form>
     </section>
 </body>

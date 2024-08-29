@@ -52,7 +52,6 @@ $result = $conn->query($sql);
                     echo "<tr>";
                     echo "<td>" . $row["ID"] . "</td>";
                     echo "<td>" . $row["Producto"] . "</td>";
-                    echo "<td>" . $row["ID Comprador"] . "</td>";
                     echo "<td>" . $row["Precio Unitario"] . "</td>";
                     echo "<td>" . $row["Cantidad"] . "</td>";
                     echo "<td>" . $row["Precio Total"] . "</td>";
