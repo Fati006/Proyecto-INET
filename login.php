@@ -1,25 +1,7 @@
+
 <?php
 
 session_start();
-
-// Procesar el formulario de login
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $password = $_POST['contraseña'];
-    $name = $_POST['name'];
-
-    if ($password === '12345') {
-        // Contraseña de administrador correcta
-        $_SESSION['is_admin'] = true;
-        header("Location: admin.php");
-        
-    } else {
-        // Redirigir al usuario normal a la página principal
-        $_SESSION['is_admin'] = false;
-        header("Location: index.html");
-        
-    }
-    exit();
-}
 
 $direccion = "localhost";
 $usuario = "root";
@@ -28,11 +10,49 @@ $dbname = "mundo_deporte";
 
 $conn = mysqli_connect($direccion, $usuario, $contraseña, $dbname);
 
-$Insert_Usuarios = "INSERT INTO `login`(`Admin`, `Cliente`) VALUES ('$name','$password')";
+// Verificar la conexión
+if (!$conn) {
+    die("Error de conexión: " . mysqli_connect_error());
+}
 
-$Insertar = mysqli_query($direccion, $Insert_Usuarios);
+if (isset($_SESSION['is_admin'])) {
+    if ($_SESSION['is_admin']) {
+        header("Location: admin.php");
+        exit();
+    } else {
+        header("Location: main.html");
+        exit();
+    }
+}
 
+// Procesar el formulario de login
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    $name = mysqli_real_escape_string($conn, $_POST['name']);
+    $password = mysqli_real_escape_string($conn, $_POST['contraseña']);
 
+    if ($password === '12345') {
+        // Contraseña de administrador correcta
+        $_SESSION['is_admin'] = true;
+        header("Location: admin.php");
+        exit();
+    } else {
+        // Redirigir al usuario normal a la página principal
+        $_SESSION['is_admin'] = false;
+        header("Location: main.html");
+        exit();
+    }
+
+    // Insertar usuario en la base de datos
+    $Insert_Usuarios = "INSERT INTO `login` (`usuarios`, `contraseña usuarios`) VALUES ('$name', '$password')";
+    
+    if (mysqli_query($conn, $Insert_Usuarios)) {
+        echo "Nuevo usuario insertado correctamente.";
+    } else {
+        echo "Error: " . mysqli_error($conn);
+    }
+}
+
+mysqli_close($conn);
 ?>
 
 <!DOCTYPE html>
@@ -91,9 +111,6 @@ $Insertar = mysqli_query($direccion, $Insert_Usuarios);
                                     <button type="submit" class="btn btn-primary btn-block">
                                         Inicio
                                     </button>
-                                </div>
-                                <div class="mt-4 text-center">
-                                    ¿No tiene una cuenta? <a href="register.html">¡Crea una!</a>
                                 </div>
                             </form>
                         </div>
