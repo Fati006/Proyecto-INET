@@ -15,7 +15,7 @@
         <p></p>
         <a href="">Stock</a>
         <p></p>
-        <a href="index.html">Pagina</a>
+        <a href="main.html">Pagina</a>
     </section>
 </body>
 </html>
