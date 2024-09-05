@@ -10,14 +10,14 @@ $dbname = "mundo_deporte";
 
 $conn = mysqli_connect($direccion, $usuario, $contraseña, $dbname);
 
-// Verificar la conexión
+
 if (!$conn) {
     die("Error de conexión: " . mysqli_connect_error());
 }
 
 if (isset($_SESSION['is_admin'])) {
     if ($_SESSION['is_admin']) {
-        header("Location: admin.php");
+        header("Location: admin1.php");
         exit();
     } else {
         header("Location: main.html");
@@ -25,30 +25,24 @@ if (isset($_SESSION['is_admin'])) {
     }
 }
 
-// Procesar el formulario de login
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $name = mysqli_real_escape_string($conn, $_POST['name']);
     $password = mysqli_real_escape_string($conn, $_POST['contraseña']);
 
     if ($password === '12345') {
-        // Contraseña de administrador correcta
-        $_SESSION['is_admin'] = true;
-        header("Location: admin.php");
-        exit();
+        if ($name === 'admin') {
+            $_SESSION['is_admin'] = true;
+            header("Location: admin1.php");
+            exit();
+        } else {
+            $_SESSION['is_admin'] = false;
+            header("Location: main.html");
+            exit();
+        }
     } else {
-        // Redirigir al usuario normal a la página principal
-        $_SESSION['is_admin'] = false;
-        header("Location: main.html");
-        exit();
-    }
-
-    // Insertar usuario en la base de datos
-    $Insert_Usuarios = "INSERT INTO `login` (`usuarios`, `contraseña usuarios`) VALUES ('$name', '$password')";
-    
-    if (mysqli_query($conn, $Insert_Usuarios)) {
-        echo "Nuevo usuario insertado correctamente.";
-    } else {
-        echo "Error: " . mysqli_error($conn);
+        // Insertar usuario en la base de datos
+        $Insert_Usuarios = "INSERT INTO `login` (`usuarios`, `contraseña usuarios`) VALUES ('[$name]', '[$password]')";
+        mysqli_query($conn, $Insert_Usuarios);
     }
 }
 

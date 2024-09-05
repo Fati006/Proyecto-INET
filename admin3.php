@@ -1,68 +1,100 @@
-<?php
-session_start();
-
-// Verificar si el usuario es un administrador
-if (!isset($_SESSION['is_admin']) || !$_SESSION['is_admin']) {
-    header("Location: login.php");
-    exit();
-}
-
-// Conexión a la base de datos
-$servername = "localhost";
-$user= "root";
-$password = "";
-$dbname = "mundo_deporte";
-
-$conn = new mysqli($servername, $user, $password, $dbname);
-
-// Verificar la conexión
-if ($conn->connect_error) {
-    die("Conexión fallida: " . $conn->connect_error);
-}
-
-// Consultar los pedidos
-$sql = "SELECT * FROM `datos`";
-$result = $conn->query($sql);
-?>
-
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panel de Administración - Pedidos</title>
+    <title>Pedidos Registrados</title>
+
+
+    <style>
+        table {
+            width: 80%;
+            border-collapse: collapse;
+            margin: 20px auto;
+        }
+        th, td {
+            padding: 10px;
+            text-align: center;
+            border: 1px solid #ddd;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        button {
+            padding: 5px 10px;
+            color: white;
+            background-color: red;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: rgb(192, 94, 132);
+        }
+    </style>
 </head>
 <body>
-    <h2>Panel de Administración</h2>
-    <h3>Pedidos Registrados</h3>
-    <table border="1">
-        <tr>
-            <th>ID</th>
-            <th>Producto</th>
-            <th>ID del Comprador</th>
-            <th>Precio Unitario</th>
-            <th>Cantidad</th>
-            <th>Precio Total</th>
-            <th>Fecha y Hora</th>
-        </tr>
-        <?php
-            if ($result->num_rows > 0) {
-                
-                while ($row = $result->fetch_assoc()) {
-                    echo "<tr>";
-                    echo "<td>" . $row["ID"] . "</td>";
-                    echo "<td>" . $row["Producto"] . "</td>";
-                    echo "<td>" . $row["Precio Unitario"] . "</td>";
-                    echo "<td>" . $row["Cantidad"] . "</td>";
-                    echo "<td>" . $row["Precio Total"] . "</td>";
-                    echo "<td>" . $row["Fecha y hora"] . "</td>";
-                    echo "</tr>";
-                }
-            } else {
-                echo "<tr><td colspan='8'>No hay pedidos registrados.</td></tr>";
-            }
-            $conn->close();
-        ?>
-    </table>
+    <h1 style="text-align:center;">Pedidos Registrados</h1>
+
+    <?php
+    $direccion = "localhost";
+    $usuario = "root";
+    $password = "";
+    $dbname = "mundo_deporte";
+
+    // Conectar a la base de datos
+    $conn = mysqli_connect($direccion, $usuario, $password, $dbname);
+
+    if (!$conn) {
+        die("Conexión fallida: " . mysqli_connect_error());
+    }
+
+    // Manejar la eliminación de un registro si se ha enviado una solicitud de eliminación
+    if (isset($_POST['delete'])) {
+        $id = $_POST['id'];
+
+        $deleteQuery = "DELETE FROM `datos` WHERE ID = $id";
+        $result = mysqli_query($conn, $deleteQuery);
+
+        if ($result) {
+            echo "<p style='color: green; text-align: center;'>Registro eliminado con éxito.</p>";
+        } else {
+            echo "<p style='color: red; text-align: center;'>Error al eliminar el registro: " . mysqli_error($conn) . "</p>";
+        }
+    }
+
+    // Recuperar los datos de la base de datos
+    $query = "SELECT * FROM `datos`";
+    $result = mysqli_query($conn, $query);
+
+    if (mysqli_num_rows($result) > 0) {
+        echo "<table>";
+        echo "<tr><th>ID</th><th>Cantidad de Accidentes</th><th>Tipo de Accidente</th><th>Acción</th></tr>";
+        
+        while ($row = mysqli_fetch_assoc($result)) {
+            echo "<tr>";
+            echo "<td>" . $row['ID'] . "</td>";
+            echo "<td>" . $row['Producto'] . "</td>";
+            echo "<td>" . $row['ID Comprador'] . "</td>";
+            echo "<td>" . $row['Precio unitario'] . "</td>";
+            echo "<td>" . $row['Cantidad'] . "</td>";
+            echo "<td>" . $row['Precio Total'] . "</td>";
+            echo "<td>" . $row['Fecha y hora'] . "</td>";
+            echo "<td>
+                    <form method='POST' action=''>
+                        <input type='hidden' name='id' value='" . $row['id'] . "'>
+                        <button type='submit' name='delete'>Eliminar</button>
+                    </form>
+                  </td>";
+            echo "</tr>";
+        }
+
+        echo "</table>";
+    } else {
+        echo "<p style='text-align: center;'>No hay pedidos registrados.</p>";
+    }
+
+    // Cerrar la conexión
+    mysqli_close($conn);
+    ?>
 </body>
 </html>

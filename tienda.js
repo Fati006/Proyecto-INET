@@ -1,9 +1,4 @@
-/*
-  Damián estuvo y siempre estará aquí
-   Twitter => @Damian_Friends
-   GitHub => @Damian-Friends 
-   Discord => https://go.damii.xyz/discord
-*/
+
 
 const addToShoppingCartButtons = document.querySelectorAll('.addToCart');
 addToShoppingCartButtons.forEach((addToCartButton) => {
